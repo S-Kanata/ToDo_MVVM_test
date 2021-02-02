@@ -4,15 +4,47 @@
              xmlns:local="clr-namespace:Practice_ToDo"
              StartupUri="View/MainWindow.xaml">
     <Application.Resources>
+
+
         <ControlTemplate x:Key="ButtonTemplate"
                          TargetType="Button">
             <Border Name="border"
-                BorderThickness="1"
-                BorderBrush="DarkGray"
-                CornerRadius="5">
+                    Background="{TemplateBinding Background}"
+                    BorderThickness="1"
+                    BorderBrush="DarkGray"
+                    CornerRadius="5">
                 <ContentPresenter VerticalAlignment="Center" HorizontalAlignment="Center"/>
             </Border>
+
         </ControlTemplate>
+
+        <Style TargetType="Button">
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="true">
+                    <Setter Property="Background" Value="#F1F1F1"/>
+                </Trigger>
+                <Trigger Property="IsMouseOver" Value="false">
+                    <Setter Property="Background" Value="White"/>
+                </Trigger>
+                <Trigger Property="IsPressed" Value="true">
+                    <Setter Property="Background" Value="#AFAFAF"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="DeadlineStyle" TargetType="{x:Type DatePicker}">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type DatePicker}">
+                        <Grid x:Name="PART_Root" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                            <DatePickerTextBox x:Name="PART_TextBox"></DatePickerTextBox>
+                            <Button x:Name="PART_Button" Visibility="Hidden"/>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
         <Style x:Key="PriorityStyle" TargetType="{x:Type TextBlock}" >
             <Style.Triggers>
                 <DataTrigger Binding="{Binding Priority}" Value="A">
@@ -25,6 +57,8 @@
                     <Setter Property="Foreground" Value="Green"/>
                 </DataTrigger>
             </Style.Triggers>
+
         </Style>
+        
     </Application.Resources>
 </Application>

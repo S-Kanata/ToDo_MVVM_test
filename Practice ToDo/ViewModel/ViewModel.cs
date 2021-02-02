@@ -4,27 +4,19 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Collections.Generic;
 using System.Windows;
+using Practice_ToDo.Model;
 
-namespace Practice_ToDo
+namespace Practice_ToDo.ViewModel
 {
     public class ViewModel : ViewModelBase
     {
 
         #region メンバ変数
 
-        private ObservableCollection<ToDo> todoList;
-        public ObservableCollection<ToDo> ToDoList
-        {
-            get { return todoList; }
-            set
-            {
-                RaisePropertyChanged("ToDoList");
-            }
-        }
-
         private DelegateCommand<object> btnClickCommand;
 
-        public Dictionary<int, string> Priorities { get; set; }
+        DataAccess da;
+
         #endregion
 
         #region コンストラクタ
@@ -32,8 +24,9 @@ namespace Practice_ToDo
         {
             todoList = new ObservableCollection<ToDo>();
             deadline = DateTime.Today;
+            da = new DataAccess();
             LoadPriority();
-            ReadDatabase();
+            todoList = da.ReadDatabase();
         }
         #endregion
 
@@ -56,7 +49,7 @@ namespace Practice_ToDo
         {
             get
             {
-                btnClickCommand = new DelegateCommand<object>(ExecuteDelete, CanExecuteBtnClick);
+                btnClickCommand = new DelegateCommand<object>(ExecuteDelete, CanExecuteUpdClick);
                 return btnClickCommand;
             }
             set
@@ -65,24 +58,12 @@ namespace Practice_ToDo
             }
         }
 
-        public DelegateCommand<object> UpdClickCommand
-        {
-            get
-            {
-                btnClickCommand = new DelegateCommand<object>(ExecuteUpdate, CanExecuteBtnClick);
-                return btnClickCommand;
-            }
-            set
-            {
-                btnClickCommand = value;
-            }
-        }
 
         public DelegateCommand<object> ClrClickCommand
         {
             get
             {
-                btnClickCommand = new DelegateCommand<object>(ExecuteClear, CanExecuteBtnClick);
+                btnClickCommand = new DelegateCommand<object>(ExecuteClear, CanExecuteClrClick);
                 return btnClickCommand;
             }
             set
@@ -91,6 +72,31 @@ namespace Practice_ToDo
             }
         }
 
+        public DelegateCommand<object> SaveClickCommand
+        {
+            get
+            {
+                btnClickCommand = new DelegateCommand<object>(ExecuteSave, CanExecuteBtnClick);
+                return btnClickCommand;
+            }
+            set
+            {
+                btnClickCommand = value;
+            }
+        }
+
+        public DelegateCommand<object> PriorityCommand
+        {
+            get
+            {
+                btnClickCommand = new DelegateCommand<object>(ExecutePriorityChange, CanExecuteUpdClick);
+                return btnClickCommand;
+            }
+            set
+            {
+                btnClickCommand = value;
+            }
+        }
         #endregion
 
         #region プロパティ
@@ -172,22 +178,39 @@ namespace Practice_ToDo
         }
 
 
-        #endregion
-
-
-
-        #region メソッド
-        private void ReadDatabase()
+        private ObservableCollection<ToDo> todoList;
+        public ObservableCollection<ToDo> ToDoList
         {
-            todoList.Clear();
-            using (var connection = new SQLiteConnection(App.DatabasePath))
+            get { return todoList; }
+            set
             {
-                connection.CreateTable<ToDo>();
-                foreach (var item in connection.Table<ToDo>())
-                    todoList.Add(item);
+                RaisePropertyChanged("ToDoList");
+
             }
         }
 
+        public Dictionary<int, string> Priorities { get; set; }
+
+
+
+        #endregion
+
+
+        #region メソッド
+
+        /// <summary>
+        /// データベースへ保存
+        /// </summary>
+        private void ExecuteSave(object obj)
+        {
+            da.Save(todoList);
+            MessageBox.Show("Save successful.");
+        }
+
+
+        /// <summary>
+        /// 優先度のロード
+        /// </summary>
         private void LoadPriority()
         {
             Priorities = new Dictionary<int, string>();
@@ -199,89 +222,101 @@ namespace Practice_ToDo
             Priority = Priorities[1];
         }
 
-
-
-
+        private void UpdatedChange()
+        {
+            var todo = selectedToDo;
+            var tmp = SelectedToDo;
+            tmp.Updated = DateTime.Now;
+            var index = todoList.IndexOf(todo);
+            todoList.Remove(todo);
+            todoList.Insert(index, tmp);
+        }
+        /// <summary>
+        /// 追加
+        /// </summary>
+        /// <param name="obj"></param>
         private void ExecuteAdd(object obj)
         {
             var todo = new ToDo
             {
+
                 Title = title,
                 Deadline = deadline,
                 Created = DateTime.Now,
                 Updated = DateTime.Now,
                 Priority = priority.ToString()
-            };
+            };            
+            todoList.Add(todo);
 
-            if ((Title != null) && (Deadline != null))
-            {
-                using (var connection = new SQLiteConnection(App.DatabasePath))
-                {
-                    connection.Insert(todo);
-                    connection.Close();
-                }
-                ReadDatabase();
-            }
-            else
-            {
-                MessageBox.Show("Please enter all information");
-            }
         }
 
+        /// <summary>
+        /// 消去
+        /// </summary>
+        /// <param name="obj"></param>
         private void ExecuteDelete(object obj)
         {
             var todo = SelectedToDo;
-            using (var connection = new SQLiteConnection(App.DatabasePath))
-            {
-                connection.Delete(todo);
-                connection.Close();
-            }
-            ReadDatabase();
+            todoList.Remove(todo);
         }
 
-        private void ExecuteUpdate(object obj)
-        {
-            var todo = SelectedToDo;
-            todo.Title = title;
-            todo.Deadline = deadline;
-            todo.Updated = DateTime.Now;
-            todo.Priority = priority.ToString();
-
-            if ((Title != null) && (Deadline != null))
-            {
-                using (var connection = new SQLiteConnection(App.DatabasePath))
-                {
-                    connection.Update(todo);
-                    connection.Close();
-                }
-                ReadDatabase();
-            }
-            else
-            {
-                MessageBox.Show("Please enter all information");
-            }
-        }
 
         private void ExecuteClear(object obj)
         {
-            using (var connection = new SQLiteConnection(App.DatabasePath))
-            {
-                foreach (var todo in todoList)
-                {
-                    if (todo.Done)
-                    {
-                        connection.Delete(todo);
-                    }
+            var tempList = new ObservableCollection<ToDo>();
 
-                }
+            foreach (var todo in todoList)
+            {
+                if (todo.Done) tempList.Add(todo);
             }
-            ReadDatabase();
+
+            foreach (var todo in tempList)  todoList.Remove(todo);
         }
 
+        private void ExecutePriorityChange(object obj)
+        {
+            var todo = SelectedToDo;
+            var tmp = SelectedToDo;
+            tmp.Priority = priority.ToString();
+            tmp.Updated = DateTime.Now;
+            var index = todoList.IndexOf(todo);
+            todoList.Remove(todo);
+            todoList.Insert(index, tmp);
+        }
+
+        #endregion
+
+        #region ボタンの実行判定
         private bool CanExecuteBtnClick()
         {
             return true;
         }
+
+        private bool CanExecuteUpdClick()
+        {
+            var todo = SelectedToDo;
+            if (todo == null)
+            {
+                return false;
+            }
+            else
+            {
+                return true;
+            }
+        }
+
+        private bool CanExecuteClrClick()
+        {
+            foreach (var todo in todoList)
+            {
+                if (todo.Done == true)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
 
         #endregion
 
@@ -293,16 +328,7 @@ namespace Practice_ToDo
 
             if (result == MessageBoxResult.Yes)
             {
-
-                using (var connection = new SQLiteConnection(App.DatabasePath))
-                {
-                    foreach (var todo in todoList)
-                    {
-                        connection.Delete(todo);
-                    }
-                }
-                ReadDatabase();
-
+                todoList.Clear();
             }
         }
 
@@ -318,7 +344,33 @@ namespace Practice_ToDo
                 btnClickCommand = value;
             }
         }
+
+        private void ExecuteBack(object obj)
+        {
+            MessageBoxResult result = MessageBox.Show("Are you sure you want to revert it the last saved?", "Confirm", MessageBoxButton.YesNo, MessageBoxImage.Error);
+
+            if (result == MessageBoxResult.Yes)
+            {
+                todoList = da.ReadDatabase();
+            }
+        }
+
+        public DelegateCommand<object> Back
+        {
+            get
+            {
+                btnClickCommand = new DelegateCommand<object>(ExecuteBack, CanExecuteBtnClick);
+                return btnClickCommand;
+            }
+            set
+            {
+                btnClickCommand = value;
+            }
+        }
+
         #endregion
+
+
     }
 }
 

@@ -21,7 +21,9 @@ namespace Practice_ToDo
         public DateTime Updated { get; set; }
 
         public DateTime Created { get; set; }
+
         public string Priority { get; set; }
+
     }
 }
 
