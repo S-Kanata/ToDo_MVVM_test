@@ -15,16 +15,15 @@ namespace Practice_ToDo
     #region DBパスの指定
     public partial class App : Application
     {
+
+
+        #region DBパスの指定
+
         static string databaseName = "ToDo.db";
         static string folderPath = Environment.CurrentDirectory;
         public static string DatabasePath = System.IO.Path.Combine(folderPath, databaseName);
 
-        public enum Priority
-        {
-            A = 1,
-            B = 2,
-            C = 3
-        }
+        #endregion
     }
     # endregion
 }

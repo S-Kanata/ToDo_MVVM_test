@@ -48,69 +48,6 @@ namespace Practice_ToDo.Model
             }
         }
 
-
-        #region ViewModelから直接操作する時用のメソッド
-
-        public ObservableCollection<ToDo> Add(ToDo todo)
-        {
-            using (var connection = new SQLiteConnection(App.DatabasePath))
-            {
-                connection.Insert(todo);
-            }
-            Load();
-            return _todoList;
-        }
-
-        public ObservableCollection<ToDo> Delete(ToDo todo)
-        {
-            using (var connection = new SQLiteConnection(App.DatabasePath))
-            {
-                connection.Delete(todo);
-            }
-            Load();
-            return _todoList;
-        }
-
-        public ObservableCollection<ToDo> Clear()
-        {
-            using (var connection = new SQLiteConnection(App.DatabasePath))
-            {
-                foreach (var todo in _todoList)
-                {
-                    if (todo.Done) connection.Delete(todo);
-                }
-            }
-            Load();
-            return _todoList;
-        }
-
-
-        public ObservableCollection<ToDo> Reset()
-        {
-            using (var connection = new SQLiteConnection(App.DatabasePath))
-            {
-                foreach (var todo in _todoList)
-                {
-                    connection.Delete(todo);
-
-                }
-            }
-            Load();
-            return _todoList;
-        }
-        
-       
-        public ObservableCollection<ToDo> Update(ToDo todo)
-        {
-            using (var connection = new SQLiteConnection(App.DatabasePath))
-            {
-                connection.Update(todo);
-            }
-            Load();
-            return _todoList;
-        }
-      
-        #endregion
     }
 }
 

@@ -24,9 +24,7 @@ namespace Practice_ToDo.ViewModel
         {
             todoList = new ObservableCollection<ToDo>();
             todoView = new ObservableCollection<DataGridRow>();
-            deadline = DateTime.Today;
             da = new DataAccess();
-            LoadPriority();
             todoList = da.ReadDatabase();
             ConvertToRow();
         }
@@ -87,87 +85,22 @@ namespace Practice_ToDo.ViewModel
             }
         }
 
-        public DelegateCommand<object> PriorityCommand
-        {
-            get
-            {
-                btnClickCommand = new DelegateCommand<object>(ExecutePriorityChange, CanExecuteUpdClick);
-                return btnClickCommand;
-            }
-            set
-            {
-                btnClickCommand = value;
-            }
-        }
         #endregion
 
         #region プロパティ
 
-        private string title;
-        public string Title
-        {
-            get { return title; }
-            set
-            {
-                title = value;
-                RaisePropertyChanged("Title");
-            }
-        }
+        public string Title;
 
-        private DateTime deadline;
-        public DateTime Deadline
-        {
-            get { return deadline; }
-            set
-            {
-                deadline = value;
-                RaisePropertyChanged("Deadline");
-            }
-        }
+        public DateTime Deadline;
 
-        private bool done;
-        public bool Done
-        {
-            get { return done; }
-            set
-            {
-                done = value;
-                RaisePropertyChanged("Done");
-            }
-        }
+        public bool Done;
 
-        private DateTime created;
-        public DateTime Created
-        {
-            get { return created; }
-            set
-            {
-                created = value;
-                RaisePropertyChanged("Created");
-            }
-        }
+        public DateTime Created;
 
-        private DateTime updated;
-        public DateTime Updated
-        {
-            get { return updated; }
-            set
-            {
-                updated = value;
-                RaisePropertyChanged("Updated");
-            }
-        }
+        public DateTime Updated;
 
-        private string priority;
-        public string Priority
-        {
-            get { return priority; }
-            set
-            {
-                priority = value;
-                RaisePropertyChanged("Priority");
-            }
-        }
+        public string Priority;
+
 
         private DataGridRow selectedRow;
         public DataGridRow SelectedRow
@@ -178,9 +111,6 @@ namespace Practice_ToDo.ViewModel
                 RaisePropertyChanged("SelectedRow");
             }
         }
-
-
-
 
 
         private ObservableCollection<ToDo> todoList;
@@ -208,11 +138,8 @@ namespace Practice_ToDo.ViewModel
             }
         }
 
-        public Dictionary<int, string> Priorities { get; set; }
-
-
-
         #endregion
+
 
         #region メソッド
 
@@ -266,30 +193,6 @@ namespace Practice_ToDo.ViewModel
             MessageBox.Show("Save successful.");
         }
 
-
-        /// <summary>
-        /// 優先度のロード
-        /// </summary>
-        private void LoadPriority()
-        {
-            Priorities = new Dictionary<int, string>();
-            foreach (int x in Enum.GetValues(typeof(App.Priority)))
-            {
-                Priorities.Add(x, Enum.GetName(typeof(App.Priority), x));
-            }
-
-            Priority = Priorities[1];
-        }
-
-        private void UpdatedChange()
-        {
-            var todo = selectedRow;
-            var tmp = SelectedRow;
-            tmp.Updated = DateTime.Now;
-            var index = todoView.IndexOf(todo);
-            todoView.Remove(todo);
-            todoView.Insert(index, tmp);
-        }
         /// <summary>
         /// 追加
         /// </summary>
@@ -298,12 +201,11 @@ namespace Practice_ToDo.ViewModel
         {
             var todo = new ToDo
             {
-
-                Title = title,
-                Deadline = deadline,
+                Title = "",
+                Deadline = DateTime.Now,
                 Created = DateTime.Now,
                 Updated = DateTime.Now,
-                Priority = priority.ToString()
+                Priority = "A"
             };            
             todoList.Add(todo);
             ConvertToRow();
@@ -332,17 +234,6 @@ namespace Practice_ToDo.ViewModel
 
             foreach (var todo in tempList)  todoView.Remove(todo);
             ConvertToDB();
-        }
-
-        private void ExecutePriorityChange(object obj)
-        {
-            var row = SelectedRow;
-            var tmp = SelectedRow;
-            tmp.PrioritySt = priority.ToString();
-            tmp.Updated = DateTime.Now;
-            var index = todoView.IndexOf(row);
-            todoView.Remove(row);
-            todoView.Insert(index, tmp);
         }
 
         #endregion
@@ -381,7 +272,7 @@ namespace Practice_ToDo.ViewModel
 
         #endregion
 
-        #region デバッグ用
+        #region リセット
 
         private void ExecuteReset(object obj)
         {
@@ -415,6 +306,7 @@ namespace Practice_ToDo.ViewModel
             {
                 todoList = da.ReadDatabase();
             }
+            ConvertToRow();
         }
 
         public DelegateCommand<object> Back
