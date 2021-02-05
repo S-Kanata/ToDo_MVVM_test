@@ -18,9 +18,9 @@ namespace Practice_ToDo.View
     /// <summary>
     /// MainWindow.xaml の相互作用ロジック
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class MainView : Window
     {
-        public MainWindow()
+        public MainView()
         {
             InitializeComponent();
             this.DataContext = new ViewModel.ViewModel();

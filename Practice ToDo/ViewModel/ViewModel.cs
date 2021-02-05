@@ -85,6 +85,32 @@ namespace Practice_ToDo.ViewModel
             }
         }
 
+        public DelegateCommand<object> Reset
+        {
+            get
+            {
+                btnClickCommand = new DelegateCommand<object>(ExecuteReset, CanExecuteBtnClick);
+                return btnClickCommand;
+            }
+            set
+            {
+                btnClickCommand = value;
+            }
+        }
+
+        public DelegateCommand<object> Back
+        {
+            get
+            {
+                btnClickCommand = new DelegateCommand<object>(ExecuteBack, CanExecuteBtnClick);
+                return btnClickCommand;
+            }
+            set
+            {
+                btnClickCommand = value;
+            }
+        }
+
         #endregion
 
         #region プロパティ
@@ -236,6 +262,27 @@ namespace Practice_ToDo.ViewModel
             ConvertToDB();
         }
 
+        private void ExecuteBack(object obj)
+        {
+            MessageBoxResult result = MessageBox.Show("Are you sure you want to revert it the last saved?", "Confirm", MessageBoxButton.YesNo, MessageBoxImage.Error);
+
+            if (result == MessageBoxResult.Yes)
+            {
+                todoList = da.ReadDatabase();
+            }
+            ConvertToRow();
+        }
+        private void ExecuteReset(object obj)
+        {
+            MessageBoxResult result = MessageBox.Show("Are you sure you want to delete all ToDo?", "Confirm", MessageBoxButton.YesNo, MessageBoxImage.Error);
+
+            if (result == MessageBoxResult.Yes)
+            {
+                todoView.Clear();
+            }
+            ConvertToDB();
+        }
+
         #endregion
 
         #region ボタンの実行判定
@@ -269,61 +316,7 @@ namespace Practice_ToDo.ViewModel
             return false;
         }
 
-
         #endregion
-
-        #region リセット
-
-        private void ExecuteReset(object obj)
-        {
-            MessageBoxResult result = MessageBox.Show("Are you sure you want to delete all ToDo?", "Confirm", MessageBoxButton.YesNo, MessageBoxImage.Error);
-
-            if (result == MessageBoxResult.Yes)
-            {
-                todoView.Clear();
-            }
-            ConvertToDB();
-        }
-
-        public DelegateCommand<object> Reset
-        {
-            get
-            {
-                btnClickCommand = new DelegateCommand<object>(ExecuteReset, CanExecuteBtnClick);
-                return btnClickCommand;
-            }
-            set
-            {
-                btnClickCommand = value;
-            }
-        }
-
-        private void ExecuteBack(object obj)
-        {
-            MessageBoxResult result = MessageBox.Show("Are you sure you want to revert it the last saved?", "Confirm", MessageBoxButton.YesNo, MessageBoxImage.Error);
-
-            if (result == MessageBoxResult.Yes)
-            {
-                todoList = da.ReadDatabase();
-            }
-            ConvertToRow();
-        }
-
-        public DelegateCommand<object> Back
-        {
-            get
-            {
-                btnClickCommand = new DelegateCommand<object>(ExecuteBack, CanExecuteBtnClick);
-                return btnClickCommand;
-            }
-            set
-            {
-                btnClickCommand = value;
-            }
-        }
-
-        #endregion
-
 
     }
 }
