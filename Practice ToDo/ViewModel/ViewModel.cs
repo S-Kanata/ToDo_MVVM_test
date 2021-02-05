@@ -23,10 +23,12 @@ namespace Practice_ToDo.ViewModel
         public ViewModel()
         {
             todoList = new ObservableCollection<ToDo>();
+            todoView = new ObservableCollection<DataGridRow>();
             deadline = DateTime.Today;
             da = new DataAccess();
             LoadPriority();
             todoList = da.ReadDatabase();
+            ConvertToRow();
         }
         #endregion
 
@@ -140,7 +142,7 @@ namespace Practice_ToDo.ViewModel
             get { return created; }
             set
             {
-                updated = value;
+                created = value;
                 RaisePropertyChanged("Created");
             }
         }
@@ -167,15 +169,18 @@ namespace Practice_ToDo.ViewModel
             }
         }
 
-        private ToDo selectedToDo;
-        public ToDo SelectedToDo
+        private DataGridRow selectedRow;
+        public DataGridRow SelectedRow
         {
-            get { return selectedToDo; }
+            get { return selectedRow; }
             set {
-                selectedToDo = value;
-                RaisePropertyChanged("SelectedToDo");
+                selectedRow = value;
+                RaisePropertyChanged("SelectedRow");
             }
         }
+
+
+
 
 
         private ObservableCollection<ToDo> todoList;
@@ -184,7 +189,21 @@ namespace Practice_ToDo.ViewModel
             get { return todoList; }
             set
             {
+                todoList = value;
                 RaisePropertyChanged("ToDoList");
+
+            }
+        }
+
+
+        private ObservableCollection<DataGridRow> todoView;
+        public ObservableCollection<DataGridRow> ToDoView
+        {
+            get { return todoView; }
+            set
+            {
+                todoView = value;
+                RaisePropertyChanged("ToDoView");
 
             }
         }
@@ -195,14 +214,54 @@ namespace Practice_ToDo.ViewModel
 
         #endregion
 
-
         #region メソッド
+
+        /// <summary>
+        /// DataGridRowからToDoへ変換
+        /// </summary>
+        private void ConvertToDB()
+        {
+            todoList.Clear();
+            foreach (var row in todoView)
+            {
+                var todo = new ToDo
+                {
+                    Title = row.Title,
+                    Deadline = row.Deadline,
+                    Created = row.Created,
+                    Updated = row.Updated,
+                    Priority = row.prioritySt
+                };
+                todoList.Add(todo);
+            }
+        }
+
+        /// <summary>
+        /// ToDoからDataGridRowへ変換
+        /// </summary>
+        private void ConvertToRow()
+        {
+            todoView.Clear();
+            foreach (var todo in todoList)
+            {
+                var row = new DataGridRow
+                {
+                    Title = todo.Title,
+                    Deadline = todo.Deadline,
+                    Created = todo.Created,
+                    Updated = todo.Updated,
+                    PrioritySt = todo.Priority
+                };
+                todoView.Add(row);
+            }
+        }
 
         /// <summary>
         /// データベースへ保存
         /// </summary>
         private void ExecuteSave(object obj)
         {
+            ConvertToDB();
             da.Save(todoList);
             MessageBox.Show("Save successful.");
         }
@@ -224,12 +283,12 @@ namespace Practice_ToDo.ViewModel
 
         private void UpdatedChange()
         {
-            var todo = selectedToDo;
-            var tmp = SelectedToDo;
+            var todo = selectedRow;
+            var tmp = SelectedRow;
             tmp.Updated = DateTime.Now;
-            var index = todoList.IndexOf(todo);
-            todoList.Remove(todo);
-            todoList.Insert(index, tmp);
+            var index = todoView.IndexOf(todo);
+            todoView.Remove(todo);
+            todoView.Insert(index, tmp);
         }
         /// <summary>
         /// 追加
@@ -247,7 +306,7 @@ namespace Practice_ToDo.ViewModel
                 Priority = priority.ToString()
             };            
             todoList.Add(todo);
-
+            ConvertToRow();
         }
 
         /// <summary>
@@ -256,32 +315,34 @@ namespace Practice_ToDo.ViewModel
         /// <param name="obj"></param>
         private void ExecuteDelete(object obj)
         {
-            var todo = SelectedToDo;
-            todoList.Remove(todo);
+            var row = SelectedRow;
+            todoView.Remove(row);
+            ConvertToDB();
         }
 
 
         private void ExecuteClear(object obj)
         {
-            var tempList = new ObservableCollection<ToDo>();
+            var tempList = new ObservableCollection<DataGridRow>();
 
-            foreach (var todo in todoList)
+            foreach (var todo in todoView)
             {
                 if (todo.Done) tempList.Add(todo);
             }
 
-            foreach (var todo in tempList)  todoList.Remove(todo);
+            foreach (var todo in tempList)  todoView.Remove(todo);
+            ConvertToDB();
         }
 
         private void ExecutePriorityChange(object obj)
         {
-            var todo = SelectedToDo;
-            var tmp = SelectedToDo;
-            tmp.Priority = priority.ToString();
+            var row = SelectedRow;
+            var tmp = SelectedRow;
+            tmp.PrioritySt = priority.ToString();
             tmp.Updated = DateTime.Now;
-            var index = todoList.IndexOf(todo);
-            todoList.Remove(todo);
-            todoList.Insert(index, tmp);
+            var index = todoView.IndexOf(row);
+            todoView.Remove(row);
+            todoView.Insert(index, tmp);
         }
 
         #endregion
@@ -294,7 +355,7 @@ namespace Practice_ToDo.ViewModel
 
         private bool CanExecuteUpdClick()
         {
-            var todo = SelectedToDo;
+            var todo = SelectedRow;
             if (todo == null)
             {
                 return false;
@@ -307,7 +368,7 @@ namespace Practice_ToDo.ViewModel
 
         private bool CanExecuteClrClick()
         {
-            foreach (var todo in todoList)
+            foreach (var todo in todoView)
             {
                 if (todo.Done == true)
                 {
@@ -328,8 +389,9 @@ namespace Practice_ToDo.ViewModel
 
             if (result == MessageBoxResult.Yes)
             {
-                todoList.Clear();
+                todoView.Clear();
             }
+            ConvertToDB();
         }
 
         public DelegateCommand<object> Reset

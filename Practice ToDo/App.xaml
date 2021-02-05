@@ -5,7 +5,7 @@
              StartupUri="View/MainWindow.xaml">
     <Application.Resources>
 
-
+        <!-- #region ボタンのテンプレート -->
         <ControlTemplate x:Key="ButtonTemplate"
                          TargetType="Button">
             <Border Name="border"
@@ -31,7 +31,11 @@
                 </Trigger>
             </Style.Triggers>
         </Style>
+        <!-- #endregion -->
 
+        <!--#region お蔵入り-->
+        
+        <!-- カレンダーアイコンを非表示>
         <Style x:Key="DeadlineStyle" TargetType="{x:Type DatePicker}">
             <Setter Property="Template">
                 <Setter.Value>
@@ -43,22 +47,27 @@
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
-        </Style>
-
-        <Style x:Key="PriorityStyle" TargetType="{x:Type TextBlock}" >
+        </Style-->
+        
+        <!-- 優先度に応じて文字色を変更>
+        <Style x:Key="PriorityStyle" TargetType="{x:Type ComboBox}">
             <Style.Triggers>
-                <DataTrigger Binding="{Binding Priority}" Value="A">
+                <DataTrigger Binding="{Binding PrioritySt}" Value="A">
                     <Setter Property="Foreground" Value="Red"/>
+                    <Setter Property="HorizontalAlignment" Value="Center"/>
                 </DataTrigger>
-                <DataTrigger Binding="{Binding Priority}" Value="B">
+                <DataTrigger Binding="{Binding PrioritySt}" Value="B">
                     <Setter Property="Foreground" Value="Blue"/>
+                    <Setter Property="HorizontalAlignment" Value="Center"/>
                 </DataTrigger>
-                <DataTrigger Binding="{Binding Priority}" Value="C">
+                <DataTrigger Binding="{Binding PrioritySt}" Value="C">
                     <Setter Property="Foreground" Value="Green"/>
+                    <Setter Property="HorizontalAlignment" Value="Center"/>
                 </DataTrigger>
             </Style.Triggers>
-
-        </Style>
+        </Style-->
+        
+        <!--#endregion-->
         
     </Application.Resources>
 </Application>

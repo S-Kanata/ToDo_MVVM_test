@@ -22,8 +22,8 @@
         <Grid Grid.Row="0">
 
             <DataGrid x:Name="ToDoDataGrid"
-                      ItemsSource="{Binding ToDoList, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                      SelectedItem="{Binding SelectedToDo}"
+                      ItemsSource="{Binding ToDoView, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                      SelectedItem="{Binding SelectedRow}"
                       AutoGenerateColumns="False"
                       CanUserAddRows="False"
                       HeadersVisibility="Column">
@@ -37,7 +37,7 @@
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
 
-                    <DataGridTextColumn Header="Title" IsReadOnly="False" Binding ="{Binding Title, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"  Width="200"/>
+                    <DataGridTextColumn Header="Title" IsReadOnly="False" Binding ="{Binding Title, Mode=TwoWay, UpdateSourceTrigger=LostFocus}"  Width="200"/>
 
                     <DataGridTemplateColumn Header="Deadline" IsReadOnly="True" Width="100">
                         <DataGridTemplateColumn.CellTemplate>
@@ -54,9 +54,11 @@
 
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
-                                <TextBlock Text="{Binding Priority}" 
-                                           Style="{StaticResource PriorityStyle}" 
-                                           HorizontalAlignment="Center"/>
+                                <ComboBox ItemsSource="{Binding Priorities}"
+                                          DisplayMemberPath="Value"
+                                          SelectedValue="{Binding PrioritySt, Mode=TwoWay, UpdateSourceTrigger=LostFocus}"
+                                          SelectedValuePath="Value"
+                                          />
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
@@ -109,8 +111,9 @@
                       DisplayMemberPath="Value"
                       SelectedValue="{Binding Priority}"
                       SelectedValuePath="Value"
-                      HorizontalAlignment="Center"
-                      VerticalAlignment="Center"/>
+                      HorizontalAlignment="Stretch"
+                      VerticalAlignment="Stretch"
+                      Background="White"/>
             <Button x:Name="SubmitPriority"
                     Grid.Column="5"
                     Template="{StaticResource ResourceKey=ButtonTemplate}"
