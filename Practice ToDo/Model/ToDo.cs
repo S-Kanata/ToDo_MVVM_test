@@ -14,14 +14,10 @@ namespace Practice_ToDo
         [PrimaryKey, AutoIncrement]
         public int ID { get; set; }
         public string Title { get; set; }
-
         public DateTime Deadline { get; set; }
-
         public bool Done { get; set; }
-
         public DateTime Updated { get; set; }
         public DateTime Created { get; set; }
-
         public string Priority { get; set; }
     }
 }

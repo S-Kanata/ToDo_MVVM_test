@@ -12,11 +12,8 @@ namespace Practice_ToDo
     /// App.xaml の相互作用ロジック
     /// </summary>
 
-    #region DBパスの指定
     public partial class App : Application
     {
-
-
         #region DBパスの指定
 
         static string databaseName = "ToDo.db";
@@ -25,5 +22,4 @@ namespace Practice_ToDo
 
         #endregion
     }
-    # endregion
 }
