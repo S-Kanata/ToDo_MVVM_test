@@ -128,6 +128,8 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Model\DataAccess.cs" />
+    <Compile Include="ViewModel\DataGridRow.cs" />
     <Compile Include="ViewModel\DelegateCommand.cs" />
     <Compile Include="Model\ToDo.cs" />
     <Compile Include="ViewModel\ViewModel.cs" />

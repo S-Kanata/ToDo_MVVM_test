@@ -23,7 +23,7 @@ namespace Practice_ToDo.View
         public MainWindow()
         {
             InitializeComponent();
-            this.DataContext = new ViewModel();
+            this.DataContext = new ViewModel.ViewModel();
         }
     }
 }

@@ -4,27 +4,70 @@
              xmlns:local="clr-namespace:Practice_ToDo"
              StartupUri="View/MainWindow.xaml">
     <Application.Resources>
+
+        <!-- #region ボタンのテンプレート -->
         <ControlTemplate x:Key="ButtonTemplate"
                          TargetType="Button">
             <Border Name="border"
-                BorderThickness="1"
-                BorderBrush="DarkGray"
-                CornerRadius="5">
+                    Background="{TemplateBinding Background}"
+                    BorderThickness="1"
+                    BorderBrush="DarkGray"
+                    CornerRadius="5">
                 <ContentPresenter VerticalAlignment="Center" HorizontalAlignment="Center"/>
             </Border>
+
         </ControlTemplate>
-        <Style x:Key="PriorityStyle" TargetType="{x:Type TextBlock}" >
+
+        <Style TargetType="Button">
             <Style.Triggers>
-                <DataTrigger Binding="{Binding Priority}" Value="A">
-                    <Setter Property="Foreground" Value="Red"/>
-                </DataTrigger>
-                <DataTrigger Binding="{Binding Priority}" Value="B">
-                    <Setter Property="Foreground" Value="Blue"/>
-                </DataTrigger>
-                <DataTrigger Binding="{Binding Priority}" Value="C">
-                    <Setter Property="Foreground" Value="Green"/>
-                </DataTrigger>
+                <Trigger Property="IsMouseOver" Value="true">
+                    <Setter Property="Background" Value="#F1F1F1"/>
+                </Trigger>
+                <Trigger Property="IsMouseOver" Value="false">
+                    <Setter Property="Background" Value="White"/>
+                </Trigger>
+                <Trigger Property="IsPressed" Value="true">
+                    <Setter Property="Background" Value="#AFAFAF"/>
+                </Trigger>
             </Style.Triggers>
         </Style>
+        <!-- #endregion -->
+
+        <!--#region お蔵入り-->
+        
+        <!-- カレンダーアイコンを非表示>
+        <Style x:Key="DeadlineStyle" TargetType="{x:Type DatePicker}">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type DatePicker}">
+                        <Grid x:Name="PART_Root" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                            <DatePickerTextBox x:Name="PART_TextBox"></DatePickerTextBox>
+                            <Button x:Name="PART_Button" Visibility="Hidden"/>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style-->
+        
+        <!-- 優先度に応じて文字色を変更>
+        <Style x:Key="PriorityStyle" TargetType="{x:Type ComboBox}">
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding PrioritySt}" Value="A">
+                    <Setter Property="Foreground" Value="Red"/>
+                    <Setter Property="HorizontalAlignment" Value="Center"/>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding PrioritySt}" Value="B">
+                    <Setter Property="Foreground" Value="Blue"/>
+                    <Setter Property="HorizontalAlignment" Value="Center"/>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding PrioritySt}" Value="C">
+                    <Setter Property="Foreground" Value="Green"/>
+                    <Setter Property="HorizontalAlignment" Value="Center"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style-->
+        
+        <!--#endregion-->
+        
     </Application.Resources>
 </Application>
